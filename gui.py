@@ -36,6 +36,9 @@ class NewTask(object):
         self.c = chronometer.Chronometer()
         self.startFlag = False
         self.Draw()
+        #Diego-Adding two variables, so Far is a temp container or the sum of elapsed
+        self.soFar = 0
+        self.grandTotal = 0
 
     def Draw(self):
         self.startButton()
@@ -64,6 +67,8 @@ class NewTask(object):
     def startStop(self):
         if self.startFlag == True:
             self.c.stop()
+            #Diego-Adding elapsed to soFar
+            self.soFar = self.soFar + self.c.elapsed
             self.startFlag = False
             self.button["text"] = 'Start'
         else:
@@ -73,7 +78,14 @@ class NewTask(object):
             self.button["text"] = 'Stop'
 
     def tick(self):
-        m, s = divmod(self.c.elapsed, 60)
+
+        #Diego-Adding conditional to display the total sum or the current value of soFar, if the object is stopped
+        if self.startFlag == True:
+            self.grandTotal = self.c.elapsed + self.soFar
+        else:
+            self.grandTotal = self.soFar
+        m, s = divmod(self.grandTotal, 60)
+        #Diego-commenting this:      m, s = divmod(self.c.elapsed, 60)
         h, m = divmod(m, 60)
         timeLabel = "%d:%02d:%02d" % (h, m, s)
         self.labelText.set(timeLabel)
@@ -96,6 +108,8 @@ class NewGui(object):
         self._mycanvas.pack(fill=BOTH, expand=YES)
         self._mycanvas2 = ResizingCanvas(self._myframe,width=100, height=20, highlightthickness=0)
         self._mycanvas2.pack(fill=BOTH, expand=YES)
+        #Diego-Removing max option form the window
+        self._root.resizable(0,0)
         button = Button(self._mycanvas, text = 'Create new task', command = self.createTask , anchor = W)
         button.configure(width = 10, activebackground = "#33B5E5", relief = FLAT)
         button.pack(side = LEFT)
