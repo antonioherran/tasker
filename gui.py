@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-1 -*-
 
-import chronometer
+#import chronometer
+import chron
+import threading
 from Tkinter import *
 
 
@@ -33,12 +35,15 @@ class NewTask(object):
         self._canvas.pack(fill=BOTH, expand=YES)
         self.labelText = StringVar()
         self.labelText.set('0:00:00')
-        self.c = chronometer.Chronometer()
-        self.startFlag = False
+        self.stopFlag = threading.Event()
+        self.c = chron.Chronometer(self.stopFlag)
+        self.c.start()
+        self.stopFlag.set()
         self.Draw()
         #Diego-Adding two variables, so Far is a temp container or the sum of elapsed
         self.soFar = 0
         self.grandTotal = 0
+        self.startFlag = False
 
     def Draw(self):
         self.startButton()
@@ -65,26 +70,27 @@ class NewTask(object):
         self.delbutton.pack(side = LEFT)
 
     def startStop(self):
-        if self.startFlag == True:
-            self.c.stop()
-            #Diego-Adding elapsed to soFar
-            self.soFar = self.soFar + self.c.elapsed
-            self.startFlag = False
-            self.button["text"] = 'Start'
-        else:
-            self.c.start()
+        if self.startFlag == False:
+            self.stopFlag.clear()
             self.tick()
             self.startFlag = True
+            print "pressed Start"
             self.button["text"] = 'Stop'
+        else:
+            self.stopFlag.set()
+            #Diego-Adding elapsed to soFar
+            print "pressed Stop"
+            #self.soFar = self.soFar + self.c.elapsed
+            self.startFlag = False
+            self.button["text"] = 'Start'
 
     def tick(self):
-
         #Diego-Adding conditional to display the total sum or the current value of soFar, if the object is stopped
-        if self.startFlag == True:
-            self.grandTotal = self.c.elapsed + self.soFar
-        else:
-            self.grandTotal = self.soFar
-        m, s = divmod(self.grandTotal, 60)
+        #if self.startFlag == True:
+        #    self.grandTotal = int(self.c.chron) + self.soFar
+        #else:
+        #    self.grandTotal = self.soFar
+        m, s = divmod(self.c.time, 60)
         #Diego-commenting this:      m, s = divmod(self.c.elapsed, 60)
         h, m = divmod(m, 60)
         timeLabel = "%d:%02d:%02d" % (h, m, s)
