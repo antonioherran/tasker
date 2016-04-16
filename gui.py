@@ -116,7 +116,7 @@ class NewGui(object):
         self._mycanvas2.pack(fill=BOTH, expand=YES)
         #Diego-Removing max option form the window
         self._root.resizable(0,0)
-        button = Button(self._mycanvas, text = 'Create new task', command = self.createTask , anchor = W)
+        button = Button(self._mycanvas, text = 'New task', command = self.createTask , anchor = W)
         button.configure(width = 10, activebackground = "#33B5E5", relief = FLAT)
         button.pack(side = LEFT)
         button = Button(self._mycanvas, text = 'Quit', command = self._myframe.quit, anchor = W)
